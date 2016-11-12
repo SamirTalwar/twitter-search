@@ -10,9 +10,10 @@ if [[ -z "$TWITTER_CONSUMER_KEY" || -z "$TWITTER_CONSUMER_SECRET" || $# -ne 1 ]]
   exit 2
 fi
 
-websocketd --port=8081 --passenv=PATH,TWITTER_CONSUMER_KEY,TWITTER_CONSUMER_SECRET bash -c "
+NODE="$(command -v node)"
+websocketd --port=8081 --passenv=TWITTER_CONSUMER_KEY,TWITTER_CONSUMER_SECRET bash -c "
   set -e
   while true; do
-    ./server.js '$@' || :
+    $NODE ./server.js '$@' || :
     sleep 15
   done"
