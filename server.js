@@ -79,7 +79,7 @@ const runServer = accessToken => {
   console.log(`Server application running on http://localhost:${serverPort}.`)
 
   const search = () => {
-    console.log('Searching...')
+    console.log(`Searching at ${new Date()}...`)
     return get(twitterSearchUrl, accessToken)
       .then(data => {
         websocketServer.clients.forEach(client => {
