@@ -105,6 +105,12 @@ const runServer = () => {
           .then(([_, {body: response}]) => client.send(response))
           .catch(console.error))
 
+      const searchStream = twitter.stream('statuses/filter', {track: searchQuery})
+      searchStream.on('data', event => {
+        console.log(event)
+      })
+      searchStream.on('error', console.error)
+
       const search = () => {
         console.log(`Searching at ${new Date()}...`)
         return get('search/tweets', {q: searchQuery, count: 100})
