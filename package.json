@@ -18,6 +18,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "oauth": "^0.9.14"
+    "oauth": "^0.9.14",
+    "ws": "^1.1.1"
   }
 }
