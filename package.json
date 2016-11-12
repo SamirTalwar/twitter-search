@@ -18,7 +18,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "oauth": "^0.9.14",
+    "request": "^2.78.0",
+    "twitter": "^1.4.0",
     "ws": "^1.1.1"
   }
 }
