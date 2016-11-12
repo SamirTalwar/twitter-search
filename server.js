@@ -68,8 +68,10 @@ const runClient = () => {
         break
     }
   })
-  clientServer.listen(clientPort)
-  console.log(`Client application running on http://localhost:${clientPort}.`)
+  return denodeify(clientServer.listen.bind(clientServer))(clientPort)
+    .then(() => {
+      console.log(`Client application running on http://localhost:${clientPort}.`)
+    })
 }
 
 const runServer = accessToken => {
@@ -89,11 +91,9 @@ const runServer = accessToken => {
   return search()
 }
 
-getOAuthAccessToken('', {'grant_type': 'client_credentials'})
-  .then(accessToken => {
-    runClient()
-    runServer(accessToken)
-  })
+runClient()
+  .then(() => getOAuthAccessToken('', {'grant_type': 'client_credentials'}))
+  .then(runServer)
   .catch(error => {
     console.error(error)
     process.exitCode = 1
