@@ -14,5 +14,10 @@ ifndef websocketd
 $(error 'This application requires `elm`, `node` and `websocketd`. Please install them before running.')
 endif
 
+build: client.js
+
+client.js: Client.elm
+	$(elm) make --output=$@ $^
+
 run:
 	./server "$$QUERY"
