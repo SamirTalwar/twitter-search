@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const http = require('http')
+const fs = require('fs')
 const oauth = require('oauth')
 const querystring = require('querystring')
 const WebSocketServer = require('ws').Server
@@ -23,7 +25,9 @@ const denodeify = func => (...args) =>
     })
   })
 
-const port = parseInt(env('PORT', '8081'), 10)
+const clientPort = parseInt(env('CLIENT_PORT', '8080'), 10)
+const serverPort = parseInt(env('SERVER_PORT', '8081'), 10)
+
 const searchInterval = parseInt(env('SEARCH_INTERVAL', '15000'), 10)
 const twitterConsumerKey = env('TWITTER_CONSUMER_KEY')
 const twitterConsumerSecret = env('TWITTER_CONSUMER_SECRET')
@@ -39,12 +43,43 @@ const get = denodeify(oa.get.bind(oa))
 
 getOAuthAccessToken('', {'grant_type': 'client_credentials'})
   .then(accessToken => {
-    const server = new WebSocketServer({port})
+    const clientServer = http.createServer((request, response) => {
+      if (request.method !== 'GET') {
+        response.writeHead(404)
+        response.end()
+        return
+      }
+
+      switch (request.url) {
+        case '/':
+          fs.createReadStream('client.html').pipe(response)
+          break
+        case '/app.css':
+          fs.createReadStream('app.css').pipe(response)
+          break
+        case '/client.js':
+          fs.createReadStream('client.js').pipe(response)
+          break
+        case '/load.js':
+          fs.createReadStream('load.js').pipe(response)
+          break
+        default:
+          response.writeHead(404)
+          response.end()
+          break
+      }
+    })
+    clientServer.listen(clientPort)
+    console.log(`Client application running on http://localhost:${clientPort}.`)
+
+    const websocketServer = new WebSocketServer({port: serverPort})
+    console.log(`Server application running on http://localhost:${serverPort}.`)
+
     const search = () => {
       console.log('Searching...')
       return get(twitterSearchUrl, accessToken)
         .then(data => {
-          server.clients.forEach(client => {
+          websocketServer.clients.forEach(client => {
             client.send(data)
           })
         })
