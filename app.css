@@ -33,6 +33,10 @@ body {
   animation: fade-in 2s;
 }
 
+.person { color: green }
+.text { color: white }
+.date { color: cyan }
+
 @keyframes fade-in {
   from {
     background-color: #f90;
