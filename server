@@ -1,4 +1,9 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
+
+if [[ -z "$TWITTER_CONSUMER_KEY" || -z "$TWITTER_CONSUMER_SECRET" || $# -ne 1 ]]; then
+  echo >&2 "Usage: TWITTER_CONSUMER_KEY=<key> TWITTER_CONSUMER_SECRET=<secret> $0 <query>"
+  exit 2
+fi
 
 websocketd --port=8081 --passenv=PATH,TWITTER_CONSUMER_KEY,TWITTER_CONSUMER_SECRET bash -c "
   set -e
