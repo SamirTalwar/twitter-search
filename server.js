@@ -41,51 +41,58 @@ oa.useAuthorizationHeaderforGET(true)
 const getOAuthAccessToken = denodeify(oa.getOAuthAccessToken.bind(oa))
 const get = denodeify(oa.get.bind(oa))
 
-getOAuthAccessToken('', {'grant_type': 'client_credentials'})
-  .then(accessToken => {
-    const clientServer = http.createServer((request, response) => {
-      if (request.method !== 'GET') {
+const runClient = () => {
+  const clientServer = http.createServer((request, response) => {
+    if (request.method !== 'GET') {
+      response.writeHead(404)
+      response.end()
+      return
+    }
+
+    switch (request.url) {
+      case '/':
+        fs.createReadStream('client.html').pipe(response)
+        break
+      case '/app.css':
+        fs.createReadStream('app.css').pipe(response)
+        break
+      case '/client.js':
+        fs.createReadStream('client.js').pipe(response)
+        break
+      case '/load.js':
+        fs.createReadStream('load.js').pipe(response)
+        break
+      default:
         response.writeHead(404)
         response.end()
-        return
-      }
-
-      switch (request.url) {
-        case '/':
-          fs.createReadStream('client.html').pipe(response)
-          break
-        case '/app.css':
-          fs.createReadStream('app.css').pipe(response)
-          break
-        case '/client.js':
-          fs.createReadStream('client.js').pipe(response)
-          break
-        case '/load.js':
-          fs.createReadStream('load.js').pipe(response)
-          break
-        default:
-          response.writeHead(404)
-          response.end()
-          break
-      }
-    })
-    clientServer.listen(clientPort)
-    console.log(`Client application running on http://localhost:${clientPort}.`)
-
-    const websocketServer = new WebSocketServer({port: serverPort})
-    console.log(`Server application running on http://localhost:${serverPort}.`)
-
-    const search = () => {
-      console.log('Searching...')
-      return get(twitterSearchUrl, accessToken)
-        .then(data => {
-          websocketServer.clients.forEach(client => {
-            client.send(data)
-          })
-        })
-        .then(() => setTimeout(search, searchInterval))
+        break
     }
-    return search()
+  })
+  clientServer.listen(clientPort)
+  console.log(`Client application running on http://localhost:${clientPort}.`)
+}
+
+const runServer = accessToken => {
+  const websocketServer = new WebSocketServer({port: serverPort})
+  console.log(`Server application running on http://localhost:${serverPort}.`)
+
+  const search = () => {
+    console.log('Searching...')
+    return get(twitterSearchUrl, accessToken)
+      .then(data => {
+        websocketServer.clients.forEach(client => {
+          client.send(data)
+        })
+      })
+      .then(() => setTimeout(search, searchInterval))
+  }
+  return search()
+}
+
+getOAuthAccessToken('', {'grant_type': 'client_credentials'})
+  .then(accessToken => {
+    runClient()
+    runServer(accessToken)
   })
   .catch(error => {
     console.error(error)
