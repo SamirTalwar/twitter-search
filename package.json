@@ -1,0 +1,23 @@
+{
+  "name": "twitter-search",
+  "version": "1.0.0",
+  "description": "A simple WebSocket server that searches Twitter and passes back the results.",
+  "homepage": "https://github.com/SamirTalwar/twitter-search#readme",
+  "author": "Samir Talwar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamirTalwar/twitter-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SamirTalwar/twitter-search/issues"
+  },
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "oauth": "^0.9.14"
+  }
+}

@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, .app.centered {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #1b1328;
+  color: #ffffff;
+}
+
+.app {
+  display: flex;
+  padding: 1em;
+  flex-direction: column;
+  justify-content: center;
+  font-family: 'PT Mono', 'Source Code Pro', monospace;
+}
+
+.tweets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tweet {
+  margin-top: 1em;
+  padding: 8px;
+  overflow: hidden;
+  animation: fade-in 2s;
+}
+
+@keyframes fade-in {
+  from {
+    background-color: #f90;
+  }
+  to {
+    background-color: none;
+  }
+}

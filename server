@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+websocketd --port=8081 --passenv=PATH,TWITTER_CONSUMER_KEY,TWITTER_CONSUMER_SECRET bash -c "
+  set -e
+  while true; do
+    ./server.js '$@' || :
+    sleep 15
+  done"
