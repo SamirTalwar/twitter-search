@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if ! command -v node || ! command -v websocketd; then
+  echo >&2 'This application requires `node` and `websocketd`. Please install them before running.'
+  exit 2
+fi
+
 if [[ -z "$TWITTER_CONSUMER_KEY" || -z "$TWITTER_CONSUMER_SECRET" || $# -ne 1 ]]; then
   echo >&2 "Usage: TWITTER_CONSUMER_KEY=<key> TWITTER_CONSUMER_SECRET=<secret> $0 <query>"
   exit 2
