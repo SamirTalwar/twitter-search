@@ -88,7 +88,12 @@ const runServer = accessToken => {
     return get(twitterSearchUrl, accessToken)
       .then(data => {
         websocketServer.clients.forEach(client => {
-          client.send(data)
+          if (Math.random() < 0.5) {
+            console.log('ERROR!!!!111oneone')
+            client.send('Error: it broke.')
+          } else {
+            client.send(data)
+          }
         })
       })
       .then(() => setTimeout(search, searchInterval))

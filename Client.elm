@@ -6,8 +6,6 @@ import Html.App as App
 import Html.Attributes exposing (class)
 import Html.Keyed exposing (ul)
 import Json.Decode as Json exposing ((:=))
-import Task
-import Time
 import WebSocket
 
 main =
@@ -15,42 +13,15 @@ main =
     init = init,
     update = update,
     view = view,
-    subscriptions = always <| WebSocket.listen server (decode >> Update)
+    subscriptions = always <| WebSocket.listen server decode
   }
 
 server = "ws://localhost:8081"
 
-type Message = Update Model
+type alias Message = Result String (List Tweet)
 
-type alias Model = Result String (List Tweet)
-
-init : (Model, Cmd Message)
-init = Ok [] ! []
-
-update : Message -> Model -> (Model, Cmd Message)
-update message model =
-  case message of
-    Update newModel ->
-      newModel ! []
-
-view : Model -> Html Message
-view model =
-  div [class "app"] [
-    case model of
-      Err error ->
-        p [] [text "Error: ", text error]
-      Ok tweets ->
-        ul [class "tweets"] (tweets |> List.take 10 |> List.map (\tweet ->
-          (tweet.id, li [class "tweet"] [
-            span [class "screen-name"] [text "@", text tweet.screenName],
-            text ": ",
-            span [class "text"] [text tweet.text],
-            br [] [],
-            span [class "timestamp"] [text (toString tweet.timestamp)]
-          ])
-        ))
-  ]
-
+type alias Model = { error : Maybe String, tweets : List Tweet }
+type alias Error = String
 type alias Tweet =
   {
     id : String,
@@ -58,6 +29,46 @@ type alias Tweet =
     text : String,
     timestamp : Date
   }
+
+init : (Model, Cmd Message)
+init = Model Nothing [] ! []
+
+update : Message -> Model -> (Model, Cmd Message)
+update message model =
+  case message of
+    Err error ->
+      { model | error = Just error } ! []
+    Ok tweets ->
+      { error = Nothing, tweets = tweets } ! []
+
+view : Model -> Html Message
+view model =
+  div [class "app"] <|
+    case model.error of
+      Just error ->
+        [
+          p [] [
+            text "We received an error from the server.",
+            br [] [],
+            text error
+          ],
+          viewTweets model.tweets
+        ]
+      Nothing ->
+        [
+          viewTweets model.tweets
+        ]
+
+viewTweets tweets =
+  ul [class "tweets"] (tweets |> List.take 10 |> List.map (\tweet ->
+    (tweet.id, li [class "tweet"] [
+      span [class "screen-name"] [text "@", text tweet.screenName],
+      text ": ",
+      span [class "text"] [text tweet.text],
+      br [] [],
+      span [class "timestamp"] [text (toString tweet.timestamp)]
+    ])
+  ))
 
 decode = Json.decodeString tweetsDecoder
 
