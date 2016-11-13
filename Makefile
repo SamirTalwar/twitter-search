@@ -14,5 +14,5 @@ build: client.js
 client.js: Client.elm
 	$(elm) make --output=$@ $^
 
-run:
+run: build
 	./server.js "$$QUERY"
