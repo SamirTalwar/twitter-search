@@ -32,10 +32,12 @@ var update_DOM = function(messages){
       };
       output += line;
     });
-    document.getElementById('tweets_go_here').innerHTML=output;
+    document.getElementById('tweets_go_here').innerHTML = output;
     return true;
   } else {
-    console.log("No messages to display" + Date('now'));
+    output = "No messages to display on " + (new Date()).toDateString();
+    console.log(output);
+    document.getElementById('tweets_go_here').innerHTML=output;
     return false;
   }
 }
@@ -46,6 +48,8 @@ socket.onmessage = function(event){
     console.log(JSON.stringify(messages[0], null, 2));
     update_DOM(messages);
   } catch(e) {
-    console.log("Error parsing JSON: " + JSON.stringify(e, null, 2));
+    output = "Error parsing JSON: " + JSON.stringify(e, null, 2)
+    document.getElementById('tweets_go_here').innerHTML = output;
+    console.log(output);
   }
 }
