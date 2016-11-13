@@ -33,7 +33,7 @@ const twitterConsumerKey = env('TWITTER_CONSUMER_KEY')
 const twitterConsumerSecret = env('TWITTER_CONSUMER_SECRET')
 const twitterSearchUrl = 'https://api.twitter.com/1.1/search/tweets.json?' + querystring.stringify({
   q: process.argv[2],
-  count: 10
+  count: 100
 })
 console.log(twitterSearchUrl)
 
