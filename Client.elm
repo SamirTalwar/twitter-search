@@ -61,17 +61,21 @@ view model =
     case model.error of
       Just error ->
         [
-          p [] [
-            text "We received an error from the server.",
-            br [] [],
-            text error
-          ],
+          viewError error,
           viewTweets model.tweets
         ]
       Nothing ->
         [
           viewTweets model.tweets
         ]
+
+viewError : Error -> Html Message
+viewError error =
+  p [class "error"] [
+    text "We received an error from the server.",
+    br [] [],
+    text error
+  ]
 
 viewTweets : List Tweet -> Html Message
 viewTweets tweets =
