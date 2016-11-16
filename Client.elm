@@ -8,6 +8,7 @@ import Html.Keyed exposing (ul)
 import Json.Decode as Json exposing ((:=))
 import WebSocket
 
+main : Program Never
 main =
   App.program {
     init = init,
@@ -16,6 +17,7 @@ main =
     subscriptions = always <| WebSocket.listen server decode
   }
 
+server : String
 server = "ws://localhost:8081"
 
 type alias Message = Result String (List Tweet)
@@ -59,6 +61,7 @@ view model =
           viewTweets model.tweets
         ]
 
+viewTweets : List Tweet -> Html Message
 viewTweets tweets =
   ul [class "tweets"] (tweets |> List.take 10 |> List.map (\tweet ->
     (tweet.id, li [class "tweet"] [
@@ -70,10 +73,13 @@ viewTweets tweets =
     ])
   ))
 
+decode : String -> Result String (List Tweet)
 decode = Json.decodeString tweetsDecoder
 
+tweetsDecoder : Json.Decoder (List Tweet)
 tweetsDecoder = "statuses" := Json.list tweetDecoder
 
+tweetDecoder : Json.Decoder Tweet
 tweetDecoder =
   Json.object4 Tweet
     ("id_str" := Json.string)
@@ -81,4 +87,5 @@ tweetDecoder =
     ("text" := Json.string)
     ("created_at" := dateDecoder)
 
+dateDecoder : Json.Decoder Date
 dateDecoder = Json.customDecoder Json.string Date.fromString
