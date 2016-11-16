@@ -1,4 +1,4 @@
-var DATE_REGEX = /^\w{3}\s(\w{3}\s\d{1,2})/;
+var DATE_REGEX = /^\w{3} (.*?) \+/;
 var MESSAGE_LIMIT = 10;
 
 var socket = new WebSocket('ws://localhost:8081');
@@ -14,17 +14,17 @@ var update_DOM = function(messages){
   var line = '';
 
   if (guard(messages)) {
-    messages.slice(1, MESSAGE_LIMIT).forEach(function(m){
+    messages.slice(0, MESSAGE_LIMIT).forEach(function(m){
       if ((typeof(m) == 'object') &&
           m.user &&
           m.user.screen_name &&
           m.text &&
           m.created_at) {
-        var line = '<ul>\n'
+        var line = '<ul class="tweets">\n'
         var sender = '<span class="screen-name">' + m.user.screen_name + '</span>';
         var text = '<span class="text">' + m.text + '</span>';
         var date = '<span class="timestamp">' + DATE_REGEX.exec(m.created_at)[1] + '</span>';
-        var tweet = date + " from @" + sender + " : " + text;
+        var tweet = date + " from @" + sender + ": " + text;
         line += '<li class="tweet">' + tweet + '</li>\n'
         line += '</ul>\n';
       } else {

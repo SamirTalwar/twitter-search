@@ -81,13 +81,26 @@ viewTweets : List Tweet -> Html Message
 viewTweets tweets =
   ul [class "tweets"] (tweets |> List.take 10 |> List.map (\tweet ->
     (tweet.id, li [classList [("tweet", True), ("new", tweet.new)]] [
-      span [class "screen-name"] [text "@", text tweet.screenName],
+      span [class "timestamp"] [
+        text (Date.month tweet.timestamp |> toString),
+        text " ",
+        text (Date.day tweet.timestamp |> toString),
+        text " ",
+        text (Date.hour tweet.timestamp |> pad),
+        text ":",
+        text (Date.minute tweet.timestamp |> pad),
+        text ":",
+        text (Date.second tweet.timestamp |> pad)
+      ],
+      text " from @",
+      span [class "screen-name"] [text tweet.screenName],
       text ": ",
-      span [class "text"] [text tweet.text],
-      br [] [],
-      span [class "timestamp"] [text (toString tweet.timestamp)]
+      span [class "text"] [text tweet.text]
     ])
   ))
+
+pad : Int -> String
+pad n = if n < 10 then "0" ++ (toString n) else toString n
 
 decode : String -> Result String (List Tweet)
 decode = Json.decodeString tweetsDecoder
