@@ -3,9 +3,10 @@ module Main exposing (main)
 import Date exposing (Date)
 import Html exposing (Html, br, div, li, p, span, text)
 import Html.App as App
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, classList)
 import Html.Keyed exposing (ul)
 import Json.Decode as Json exposing ((:=))
+import Set
 import WebSocket
 
 main : Program Never
@@ -20,6 +21,9 @@ main =
 server : String
 server = "ws://localhost:8081"
 
+tweetLimit : Int
+tweetLimit = 10
+
 type alias Message = Result String (List Tweet)
 
 type alias Model = { error : Maybe String, tweets : List Tweet }
@@ -29,7 +33,8 @@ type alias Tweet =
     id : String,
     screenName : String,
     text : String,
-    timestamp : Date
+    timestamp : Date,
+    new : Bool
   }
 
 init : (Model, Cmd Message)
@@ -37,11 +42,18 @@ init = Model Nothing [] ! []
 
 update : Message -> Model -> (Model, Cmd Message)
 update message model =
-  case message of
-    Err error ->
-      { model | error = Just error } ! []
-    Ok tweets ->
-      { error = Nothing, tweets = tweets } ! []
+  let
+    oldTweetIds = model.tweets |> List.map (\tweet -> tweet.id) |> Set.fromList
+    oldTweets = model.tweets |> List.map (\tweet -> { tweet | new = False }) |> List.take tweetLimit
+  in
+    case message of
+      Err error ->
+        { error = Just error, tweets = oldTweets } ! []
+      Ok tweets ->
+        let
+          newTweets = List.filter (\tweet -> not (Set.member tweet.id oldTweetIds)) tweets
+        in
+          { error = Nothing, tweets = newTweets ++ oldTweets } ! []
 
 view : Model -> Html Message
 view model =
@@ -64,7 +76,7 @@ view model =
 viewTweets : List Tweet -> Html Message
 viewTweets tweets =
   ul [class "tweets"] (tweets |> List.take 10 |> List.map (\tweet ->
-    (tweet.id, li [class "tweet"] [
+    (tweet.id, li [classList [("tweet", True), ("new", tweet.new)]] [
       span [class "screen-name"] [text "@", text tweet.screenName],
       text ": ",
       span [class "text"] [text tweet.text],
@@ -81,11 +93,12 @@ tweetsDecoder = "statuses" := Json.list tweetDecoder
 
 tweetDecoder : Json.Decoder Tweet
 tweetDecoder =
-  Json.object4 Tweet
+  Json.object5 Tweet
     ("id_str" := Json.string)
     (Json.at ["user", "screen_name"] Json.string)
     ("text" := Json.string)
     ("created_at" := dateDecoder)
+    (Json.succeed True)
 
 dateDecoder : Json.Decoder Date
 dateDecoder = Json.customDecoder Json.string Date.fromString

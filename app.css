@@ -30,6 +30,9 @@ body {
   margin-top: 1em;
   padding: 8px;
   overflow: hidden;
+}
+
+.new {
   animation: fade-in 2s;
 }
 
