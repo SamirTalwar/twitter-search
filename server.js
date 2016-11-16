@@ -76,23 +76,27 @@ const runClient = () => {
 
 const runServer = accessToken => {
   const websocketServer = new WebSocketServer({port: serverPort})
+  let lastResponse
+
   console.log(`Server application running on http://localhost:${serverPort}.`)
 
-  websocketServer.on('connection', client =>
-    get(twitterSearchUrl, accessToken)
-      .then(client.send.bind(client))
-      .catch(console.error));
+  websocketServer.on('connection', client => {
+    if (lastResponse) {
+      client.send(lastResponse)
+    }
+  })
 
   const search = () => {
     console.log(`Searching at ${new Date()}...`)
     return get(twitterSearchUrl, accessToken)
-      .then(data => {
+      .then(response => {
+        lastResponse = response
         websocketServer.clients.forEach(client => {
           if (Math.random() < 0.5) {
             console.log('ERROR!!!!111oneone')
             client.send('Error: it broke.')
           } else {
-            client.send(data)
+            client.send(response)
           }
         })
       })
