@@ -35,6 +35,7 @@ const twitterSearchUrl = 'https://api.twitter.com/1.1/search/tweets.json?' + que
   q: process.argv[2],
   count: 100
 })
+console.log(twitterSearchUrl)
 
 const oa = new oauth.OAuth2(twitterConsumerKey, twitterConsumerSecret, 'https://api.twitter.com/', null, 'oauth2/token', null)
 oa.useAuthorizationHeaderforGET(true)
@@ -51,14 +52,20 @@ const runClient = () => {
 
     switch (request.url) {
       case '/':
-        fs.createReadStream('client.html').pipe(response)
+        fs.createReadStream('client-js.html').pipe(response)
         break
+//      case '/':
+//        fs.createReadStream('client.html').pipe(response)
+//        break
       case '/app.css':
         fs.createReadStream('app.css').pipe(response)
         break
-      case '/client.js':
-        fs.createReadStream('client.js').pipe(response)
+      case '/client-js.js':
+        fs.createReadStream('client-js.js').pipe(response)
         break
+//      case '/client.js':
+//        fs.createReadStream('client.js').pipe(response)
+//        break
       case '/load.js':
         fs.createReadStream('load.js').pipe(response)
         break

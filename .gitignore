@@ -1,5 +1,6 @@
 client.js
-
+secret.sh
 elm-stuff/build-artifacts
 elm-stuff/packages
 node_modules
+**/*~

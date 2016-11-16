@@ -32,6 +32,14 @@ body {
   overflow: hidden;
 }
 
+.screen-name {
+  color: #d56b68;
+}
+
+.timestamp {
+  color: #65999b;
+}
+
 .new {
   animation: fade-in 2s;
 }
@@ -48,7 +56,7 @@ body {
 
 @keyframes fade-in {
   from {
-    background-color: #f90;
+    background-color: #d5b168;
   }
   to {
     background-color: none;
