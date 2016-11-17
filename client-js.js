@@ -49,8 +49,8 @@ socket.onmessage = function(event){
     document.getElementById('error').style.display = 'none';
     update_DOM(messages);
   } catch (e) {
-    output = "Error parsing JSON: " + JSON.stringify(e, null, 2)
-    document.getElementById('error').textContent = output;
+    output = "We received an error from the server.<br/>" + e.message;
+    document.getElementById('error').innerHTML = output;
     document.getElementById('error').style.display = 'block';
     console.log(output);
   }
