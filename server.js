@@ -107,7 +107,8 @@ const runServer = accessToken => {
           }
         })
       })
-      .then(() => setTimeout(search, searchInterval))
+      .then(() => new Promise(resolve => setTimeout(resolve, searchInterval)))
+      .then(search)
   }
   return search()
 }
