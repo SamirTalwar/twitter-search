@@ -9,7 +9,7 @@ var guard = function(m){
           m.length > 0);
 };
 
-var update_DOM = function(messages){
+var update_DOM = function(messages) {
   var output = '';
   var line = '';
 
@@ -32,12 +32,12 @@ var update_DOM = function(messages){
       };
       output += line;
     });
-    document.getElementById('tweets_go_here').innerHTML = output;
+    document.getElementById('tweets').innerHTML = output;
     return true;
   } else {
     output = "No messages to display on " + (new Date()).toDateString();
     console.log(output);
-    document.getElementById('tweets_go_here').innerHTML=output;
+    document.getElementById('tweets').innerHTML = output;
     return false;
   }
 }
@@ -46,10 +46,12 @@ socket.onmessage = function(event){
   try {
     messages = JSON.parse(event.data).statuses;
     console.log(JSON.stringify(messages[0], null, 2));
+    document.getElementById('error').style.display = 'none';
     update_DOM(messages);
-  } catch(e) {
+  } catch (e) {
     output = "Error parsing JSON: " + JSON.stringify(e, null, 2)
-    document.getElementById('tweets_go_here').innerHTML = output;
+    document.getElementById('error').textContent = output;
+    document.getElementById('error').style.display = 'block';
     console.log(output);
   }
 }
