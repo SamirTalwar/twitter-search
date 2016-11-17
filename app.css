@@ -38,6 +38,7 @@ body {
 
 .error {
   position: fixed;
+  max-height: 100%;
   margin: 0;
   padding: 1em;
   bottom: 0;
