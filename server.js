@@ -92,7 +92,7 @@ const runServer = accessToken => {
       .then(response => {
         lastResponse = response
         websocketServer.clients.forEach(client => {
-          if (Math.random() < 0.5) {
+          if (Math.random() < parseFloat(process.env.ERROR_RATE || '0')) {
             console.log('ERROR!!!!111oneone')
             client.send('Error: it broke.')
           } else {
